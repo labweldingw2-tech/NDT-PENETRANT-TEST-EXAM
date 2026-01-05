@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>EXAM PENETRANT TEST</title>
+    
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>PT Certification Exam - Final Professional Version</title>
+    <style>
+        :root { --p-color: #ff0000; --metal: #7f8c8d; --accent: #2ecc71; --danger: #e74c3c; }
+        body { font-family: 'Segoe UI', sans-serif; background: #000; color: #eee; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        
+        /* LOGIN OVERLAY */
+        #login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #111; z-index: 2000; display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+        }
+        .login-card { background: #222; padding: 40px; border-radius: 12px; border: 1px solid #444; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 450px; }
+        .login-card input { width: 100%; padding: 12px; margin: 20px 0; border-radius: 4px; border: 1px solid #444; background: #000; color: #fff; font-size: 16px; box-sizing: border-box; }
+
+        .header { width: 900px; display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: bold; color: var(--accent); border-bottom: 2px solid #333; padding-bottom: 10px; }
+
+        /* AREA KERJA */
+        #work-bay {
+            width: 900px; height: 350px; background: var(--metal);
+            position: relative; border: 4px solid #fff; overflow: hidden;
+            display: flex; flex-direction: column; justify-content: center; cursor: crosshair;
+        }
+        .weld-h { width: 100%; height: 80px; background: #3d3d3d; position: relative; box-shadow: inset 0 0 20px #000; }
+
+        /* Layers */
+        .layer { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; transition: all 0.8s; z-index: 5; }
+        #penetrant-layer { background: rgba(255, 0, 0, 0.7); opacity: 0; }
+        #developer-layer { background: #ffffff; opacity: 0; }
+        #noise-layer { 
+            background-image: radial-gradient(#ff0000 10%, transparent 20%);
+            background-size: 15px 15px; opacity: 0; z-index: 8;
+        }
+
+        /* Defects */
+        .defect { 
+            position: absolute; background: var(--p-color); opacity: 0; z-index: 10; 
+            transition: opacity 1s, transform 1s, filter 0.5s; transform: scale(0.5); filter: blur(2px);
+        }
+        .defect.show { opacity: 1 !important; transform: scale(1.1); filter: blur(0px); }
+        .linear { height: 6px; border-radius: 2px; }
+        .rounded { border-radius: 50%; width: 10px; height: 10px; }
+
+        /* RULER */
+        #ruler { position: absolute; border-top: 3px solid #f1c40f; pointer-events: none; display: none; z-index: 100; transform-origin: 0 0; }
+        #ruler-val { position: absolute; background: #f1c40f; color: #000; padding: 2px 8px; border-radius: 4px; font-size: 14px; font-weight: bold; display: none; z-index: 101; border: 1px solid #000; }
+
+        /* UI PANEL */
+        .panel { width: 900px; background: #222; padding: 20px; border-radius: 0 0 10px 10px; border: 1px solid #444; box-sizing: border-box; }
+        .btn-box { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 20px; }
+        .btn { padding: 15px 5px; border: none; background: #444; color: white; cursor: pointer; font-weight: bold; font-size: 11px; text-transform: uppercase; }
+        .btn.active { background: var(--accent); color: #000; }
+        .btn.error { background: var(--danger); }
+
+        .report-section { display: none; margin-top: 15px; background: #fff; color: #000; padding: 20px; border-radius: 8px; }
+        input.num-field { padding: 8px; width: 60px; font-weight: bold; font-size: 16px; border: 2px solid #333; }
+
+        /* TABEL LOG */
+        .history-section { width: 900px; margin-top: 30px; background: #111; padding: 20px; border-radius: 10px; border: 1px solid #333; box-sizing: border-box; }
+        .history-table { width: 100%; border-collapse: collapse; margin-top: 10px; color: #fff; font-size: 13px; }
+        .history-table th { background: #222; color: var(--accent); padding: 12px; text-align: left; border-bottom: 2px solid #444; }
+        .history-table td { padding: 12px; border-bottom: 1px solid #222; }
+        .grade-badge { padding: 4px 10px; border-radius: 4px; font-weight: bold; color: #000; font-size: 12px; }
+
+        /* OVERLAYS */
+        #grade-overlay, #final-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.98); display: none; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 1000; text-align: center;
+        }
+        #grade-letter { font-size: 150px; font-weight: bold; line-height: 1; margin: 10px 0; }
+        
+        /* CERTIFICATE STYLE */
+        .certificate-box { background: #fff; color: #000; padding: 40px; width: 750px; border: 15px double #333; margin: auto; text-align: center; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+        .cert-kop { border-bottom: 4px solid #333; margin-bottom: 25px; padding-bottom: 10px; }
+        .cert-status { font-size: 28px; font-weight: bold; text-transform: uppercase; margin: 20px auto; padding: 15px; width: 60%; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <div id="login-overlay">
+        <div class="login-card">
+            <h2 style="color:var(--accent); margin:0;">NDT EXAMINATION SYSTEM</h2>
+            <p style="color:#888; font-size:13px;">Liquid Penetrant Testing - Practical Phase</p>
+            <input type="text" id="inspector-name" placeholder="Nama Peserta Ujian...">
+            <button onclick="startExam()" style="width:100%; padding:15px; background:var(--accent); border:none; font-weight:bold; cursor:pointer; border-radius:4px;">START EXAMINATION</button>
+        </div>
+    </div>
+
+    <div class="header">
+        <span>INSPECTOR: <span id="display-name" style="color:white">---</span></span>
+        <span>ID: <span id="spec-no">PT-2026-01</span> (<span id="sample-count">1</span>/5)</span>
+    </div>
+
+    <div id="work-bay" onmousedown="startRuler(event)" onmousemove="moveRuler(event)" onmouseup="endRuler()">
+        <div class="weld-h" id="weld-area"></div>
+        <div id="penetrant-layer" class="layer"></div>
+        <div id="noise-layer" class="layer"></div>
+        <div id="developer-layer" class="layer"></div>
+        <div id="ruler"></div><div id="ruler-val">0 mm</div>
+    </div>
+
+    <div class="panel">
+        <div class="btn-box" id="btn-container"></div>
+        <div id="report-ui" class="report-section">
+            <h3 style="margin-top:0">INSPECTION REPORT FORM</h3>
+            <div style="display:flex; gap:30px;">
+                <div>LINEAR INDICATION: <br><input type="number" id="in-l" class="num-field" placeholder="0"></div>
+                <div>ROUNDED INDICATION: <br><input type="number" id="in-r" class="num-field" placeholder="0"></div>
+            </div>
+            <button onclick="calculateGrade()" style="width: 100%; padding: 15px; background: #000; color:#fff; border:none; font-weight:bold; cursor:pointer; margin-top:10px;">SUBMIT & EVALUATE</button>
+        </div>
+    </div>
+
+    <div class="history-section">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h3 style="margin:0; color:var(--accent);">EXAMINATION LOG HISTORY</h3>
+            <button onclick="resetLogTotal()" style="background:var(--danger); color:white; border:none; padding:5px 15px; cursor:pointer; font-weight:bold; border-radius:4px;">CLEAR ALL LOGS</button>
+        </div>
+        <table class="history-table" id="log-table">
+            <thead>
+                <tr>
+                    <th>NAME</th>
+                    <th>SPECIMEN</th>
+                    <th>SOP</th>
+                    <th>ACCURACY</th>
+                    <th>SCORE</th>
+                    <th>GRADE</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="grade-overlay">
+        <h1 style="color:white">SAMPLE RESULT</h1>
+        <div id="grade-letter">A</div>
+        <div id="grade-msg" style="color:#aaa; text-align:center; max-width:500px; margin:20px;"></div>
+        <button id="next-sample-btn" onclick="closeGrade()" style="padding: 15px 40px; background:var(--accent); border:none; font-weight:bold; cursor:pointer; border-radius:5px;">NEXT SPECIMEN</button>
+    </div>
+
+    <div id="final-overlay">
+        <div class="certificate-box">
+            <div class="cert-kop">
+                <h1 style="margin: 0; font-size: 38px; letter-spacing: 5px; color: #111;">NDT CERTIFICATION</h1>
+                <p style="margin: 5px 0; font-weight: bold; color: #666;">LIQUID PENETRANT TESTING - LEVEL II</p>
+            </div>
+
+            <p style="font-size: 18px; margin: 0;">This is to certify that:</p>
+            <h1 id="cert-inspector-name" style="font-size: 40px; margin: 10px 0; border-bottom: 2px solid #ddd; display: inline-block; min-width: 400px; font-style: italic;">---</h1>
+            
+            <div style="margin: 20px 0;">
+                <div id="cert-final-score" style="font-size: 80px; font-weight: bold; line-height: 1; color: #222;">0</div>
+                <p style="margin: 0; font-weight: bold; color: #888; font-size: 14px;">AVERAGE EXAMINATION SCORE</p>
+            </div>
+
+            <div id="cert-status-badge" class="cert-status">PASSED</div>
+
+            <p style="font-size: 11px; color: #999; margin-top: 30px;">
+                Verified by NDT Examination System. Final evaluation based on 5 random specimens.<br>
+                Minimum Passing Grade: 70.0
+            </p>
+
+            <div style="margin-top: 30px; display: flex; gap: 15px; justify-content: center;">
+                <button onclick="backToHome()" style="padding: 12px 30px; background: #333; color: #fff; border: none; font-weight: bold; cursor: pointer; border-radius: 4px;">NEW USER</button>
+                <button onclick="window.print()" style="padding: 12px 30px; background: var(--accent); color: #000; border: none; font-weight: bold; cursor: pointer; border-radius: 4px;">PRINT PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const steps = ["PRE-CLEANING", "PENETRANT", "EXCESS REMOVAL", "DEVELOPER", "POST-CLEANING"];
+        let history = [];
+        let hasError = false;
+        let targetL = 0, targetR = 0;
+        let specCount = 1;
+        let isDrawing = false, startX, startY;
+        let currentInspector = "";
+        let scoresArray = [];
+
+        function startExam() {
+            const nameInput = document.getElementById('inspector-name').value;
+            if(nameInput.trim() === "") { alert("Harap masukkan nama!"); return; }
+            currentInspector = nameInput;
+            document.getElementById('display-name').innerText = currentInspector.toUpperCase();
+            document.getElementById('login-overlay').style.display = 'none';
+            initApp();
+        }
+
+        function initApp() {
+            generateButtons();
+            generateDefects();
+            document.getElementById('spec-no').innerText = `PT-2026-${specCount.toString().padStart(2, '0')}`;
+            document.getElementById('sample-count').innerText = specCount;
+        }
+
+        function generateButtons() {
+            const container = document.getElementById('btn-container');
+            container.innerHTML = "";
+            const shuffled = [...steps].sort(() => Math.random() - 0.5);
+            shuffled.forEach(s => {
+                const b = document.createElement('button');
+                b.className = 'btn';
+                b.innerText = s;
+                b.onclick = () => runStep(s, b);
+                container.appendChild(b);
+            });
+        }
+
+        function generateDefects() {
+            const weld = document.getElementById('weld-area');
+            weld.innerHTML = "";
+            targetL = Math.floor(Math.random() * 3) + 1; 
+            targetR = Math.floor(Math.random() * 3) + 1; 
+            for(let i=0; i<targetL; i++) createEl('linear', weld);
+            for(let i=0; i<targetR; i++) createEl('rounded', weld);
+        }
+
+        function createEl(type, parent) {
+            let d = document.createElement('div');
+            d.className = `defect ${type}`;
+            d.style.left = (Math.random() * 750 + 50) + "px";
+            d.style.top = (Math.random() * 50 + 15) + "px";
+            if(type === 'linear') d.style.width = (Math.random() * 45 + 20) + "px";
+            parent.appendChild(d);
+        }
+
+        function runStep(s, btn) {
+            if(btn.classList.contains('active')) return;
+            let expectedIndex = history.length;
+            if(s !== steps[expectedIndex]) { hasError = true; btn.classList.add('error'); }
+            history.push(s);
+            btn.classList.add('active');
+            if(s === "PENETRANT") document.getElementById('penetrant-layer').style.opacity = 1;
+            if(s === "EXCESS REMOVAL") document.getElementById('penetrant-layer').style.opacity = 0;
+            if(s === "DEVELOPER") {
+                document.getElementById('developer-layer').style.opacity = 1;
+                if(hasError) document.getElementById('noise-layer').style.opacity = 0.85;
+                setTimeout(() => {
+                    document.querySelectorAll('.defect').forEach(el => el.classList.add('show'));
+                    document.getElementById('report-ui').style.display = "block";
+                }, 1200);
+            }
+        }
+
+        function calculateGrade() {
+            const l = parseInt(document.getElementById('in-l').value) || 0;
+            const r = parseInt(document.getElementById('in-r').value) || 0;
+            let score = 100;
+            if(hasError) score -= 40; 
+            if(l !== targetL) score -= 20;
+            if(r !== targetR) score -= 20;
+            if(!history.includes("POST-CLEANING")) score -= 20;
+            if(score < 0) score = 0;
+
+            scoresArray.push(score);
+
+            let grade = "F", color = "#e74c3c";
+            if(score >= 90) { grade = "A"; color = "#2ecc71"; }
+            else if(score >= 75) { grade = "B"; color = "#3498db"; }
+            else if(score >= 60) { grade = "C"; color = "#f1c40f"; }
+
+            document.getElementById('grade-letter').innerText = grade;
+            document.getElementById('grade-letter').style.color = color;
+            document.getElementById('grade-msg').innerHTML = hasError ? "SOP FAILED: Kesalahan urutan proses!" : "SOP PASSED: Prosedur sudah benar.";
+            document.getElementById('grade-overlay').style.display = "flex";
+
+            const tableBody = document.querySelector('#log-table tbody');
+            const row = tableBody.insertRow(0);
+            row.innerHTML = `<td>${currentInspector}</td><td>${document.getElementById('spec-no').innerText}</td><td style="color:${hasError ? '#e74c3c' : '#2ecc71'}">${hasError ? 'FAILED' : 'PASSED'}</td><td>${(l === targetL && r === targetR) ? "CORRECT" : "INACCURATE"}</td><td>${score}</td><td><span class="grade-badge" style="background:${color}">${grade}</span></td>`;
+            
+            if(specCount >= 5) document.getElementById('next-sample-btn').innerText = "VIEW FINAL CERTIFICATE";
+        }
+
+        function closeGrade() {
+            document.getElementById('grade-overlay').style.display = "none";
+            if(specCount >= 5) {
+                showFinalResult();
+            } else {
+                specCount++;
+                resetStepState();
+                initApp();
+            }
+        }
+
+        function showFinalResult() {
+            const sum = scoresArray.reduce((a, b) => a + b, 0);
+            const avg = (sum / 5).toFixed(1);
+            const isPassed = avg >= 70;
+
+            document.getElementById('cert-inspector-name').innerText = currentInspector.toUpperCase();
+            document.getElementById('cert-final-score').innerText = avg;
+            
+            const badge = document.getElementById('cert-status-badge');
+            if(isPassed) {
+                badge.innerText = "LULUS (PASSED)";
+                badge.style.color = "#27ae60";
+                badge.style.border = "4px solid #27ae60";
+                badge.style.background = "#ebf7ee";
+            } else {
+                badge.innerText = "TIDAK LULUS (FAILED)";
+                badge.style.color = "#c0392b";
+                badge.style.border = "4px solid #c0392b";
+                badge.style.background = "#f9ebea";
+            }
+
+            document.getElementById('final-overlay').style.display = "flex";
+        }
+
+        function backToHome() {
+            document.getElementById('final-overlay').style.display = "none";
+            document.getElementById('login-overlay').style.display = "flex";
+            document.getElementById('inspector-name').value = "";
+            specCount = 1;
+            scoresArray = [];
+            resetStepState();
+        }
+
+        function resetLogTotal() {
+            if(confirm("Hapus semua data log?")) {
+                document.querySelector('#log-table tbody').innerHTML = "";
+            }
+        }
+
+        function resetStepState() {
+            history = []; hasError = false;
+            document.getElementById('penetrant-layer').style.opacity = 0;
+            document.getElementById('developer-layer').style.opacity = 0;
+            document.getElementById('noise-layer').style.opacity = 0;
+            document.getElementById('report-ui').style.display = "none";
+            document.getElementById('in-l').value = "";
+            document.getElementById('in-r').value = "";
+            document.querySelectorAll('.defect').forEach(d => d.classList.remove('show'));
+        }
+
+        function startRuler(e) { isDrawing = true; const r = document.getElementById('work-bay').getBoundingClientRect(); startX = e.clientX - r.left; startY = e.clientY - r.top; document.getElementById('ruler').style.display = 'block'; }
+        function moveRuler(e) { if(!isDrawing) return; const r = document.getElementById('work-bay').getBoundingClientRect(); const curX = e.clientX - r.left; const curY = e.clientY - r.top; const dist = (Math.sqrt(Math.pow(curX-startX, 2) + Math.pow(curY-startY, 2)) * 0.2).toFixed(1); const rl = document.getElementById('ruler'); rl.style.left = startX + 'px'; rl.style.top = startY + 'px'; rl.style.width = (dist/0.2) + 'px'; rl.style.transform = `rotate(${Math.atan2(curY-startY, curX-startX)}rad)`; const v = document.getElementById('ruler-val'); v.style.display = 'block'; v.style.left = curX + 'px'; v.style.top = (curY-25) + 'px'; v.innerText = dist + " mm"; }
+        function endRuler() { isDrawing = false; }
+    </script>
+</body>
+</html>
+    
+  </body>
+  
+</html>
